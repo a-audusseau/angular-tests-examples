@@ -52,7 +52,7 @@ describe('AppComponent', () => {
     const pizzaCompList = spectator.queryAll(PizzaComponent);
     expect(pizzaCompList).toHaveLength(pizzas.length);
     pizzas.forEach((pizza, index) =>
-      expect(pizzaCompList.at(index)?.pizza).toEqual(pizza);
+      expect(pizzaCompList.at(index)?.pizza).toEqual(pizza)
     );
   });
 });

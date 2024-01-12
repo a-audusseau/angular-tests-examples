@@ -15,6 +15,7 @@ describe('PizzaComponent', () => {
   let spectator: Spectator<PizzaComponent>;
 
   const cart$ = new BehaviorSubject<Pizza[]>([]);
+  // createSpyObject let us create a PizzaService instance with all methods replaced by Jest spy. We can also overridres properties, so now we have the control of the cart$ Observable.
   const pizzaService = createSpyObject(PizzaService, { cart$ });
   const pizza: Pizza = {
     id: 2,
@@ -26,7 +27,9 @@ describe('PizzaComponent', () => {
 
   const createComponent = createComponentFactory({
     component: PizzaComponent,
+    // Mock services
     providers: [{ provide: PizzaService, useValue: pizzaService }],
+    // Mock components
     overrideComponents: [
       [
         PizzaComponent,
@@ -38,9 +41,11 @@ describe('PizzaComponent', () => {
     ],
   });
 
+  // You can add specific attributes to target the HTML elements, like the data-test attribute. It can help for your Angular tests and also for E2E tests if you have some.
   const addToCardSelector = '[data-test="add-to-card"]';
   const titleSelector = '.title';
 
+  // the pizza Input is required, so we need to fill it when creating the component.
   beforeEach(() => (spectator = createComponent({ props: { pizza } })));
 
   it('should display the pizza name', () => {
@@ -106,7 +111,7 @@ describe('PizzaComponent', () => {
       });
 
       describe('and the add to card button is clicked with a pizza cost over 12', () => {
-        const consoleSpy = jest.spyOn(console, 'log').mockReturnValue();
+        const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
 
         beforeEach(() => {
           spectator.setInput({
