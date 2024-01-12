@@ -1,29 +1,58 @@
-import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import {
+  Spectator,
+  createComponentFactory,
+  createSpyObject,
+} from '@ngneat/spectator/jest';
+import { PizzaService } from './pizza.service';
+import { BehaviorSubject } from 'rxjs';
+import { Pizza } from './pizza';
+import { PizzaComponent } from './pizza/pizza.component';
+import { MockComponent } from 'ng-mocks';
 
 describe('AppComponent', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [AppComponent],
-    }).compileComponents();
+  let spectator: Spectator<AppComponent>;
+
+  const pizzas: Pizza[] = [
+    {
+      id: 2,
+      name: 'Pepperoni Paradise',
+      cost: 12,
+      ingredients: ['Tomato', 'Mozzarella', 'Pepperoni'],
+      isAvailable: true,
+    },
+    {
+      id: 5,
+      name: 'Pesto Perfection',
+      cost: 13,
+      ingredients: ['Sour cream', 'Mozzarella', 'Pesto'],
+      isAvailable: false,
+    },
+  ];
+  const pizzas$ = new BehaviorSubject<Pizza[]>(pizzas);
+  const pizzaService = createSpyObject(PizzaService, { pizzas$ });
+
+  const createComponent = createComponentFactory({
+    component: AppComponent,
+    providers: [{ provide: PizzaService, useValue: pizzaService }],
+    overrideComponents: [
+      [
+        AppComponent,
+        {
+          add: { imports: [MockComponent(PizzaComponent)] },
+          remove: { imports: [PizzaComponent] },
+        },
+      ],
+    ],
   });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
+  beforeEach(() => (spectator = createComponent()));
 
-  it(`should have the 'angular-tests-examples' title`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('angular-tests-examples');
-  });
-
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, angular-tests-examples');
+  it('should display pizza list', () => {
+    const pizzaCompList = spectator.queryAll(PizzaComponent);
+    expect(pizzaCompList).toHaveLength(pizzas.length);
+    pizzas.forEach((pizza, index) =>
+      expect(pizzaCompList.at(index)?.pizza).toEqual(pizza);
+    );
   });
 });

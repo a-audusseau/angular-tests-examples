@@ -1,14 +1,20 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { AsyncPipe } from '@angular/common';
+import { PizzaComponent } from './pizza/pizza.component';
+import { PizzaService } from './pizza.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  imports: [AsyncPipe, PizzaComponent],
+  template: `
+    @for (pizza of pizzas$ | async; track pizza.id) {
+    <app-pizza [pizza]="pizza" />
+    }
+  `,
 })
 export class AppComponent {
-  title = 'angular-tests-examples';
+  public readonly pizzas$ = this.pizzaService.pizzas$;
+
+  constructor(private readonly pizzaService: PizzaService) {}
 }
