@@ -1,6 +1,6 @@
 # Angular Tests Examples
 
-A simple Angular app including examples for Medium article.
+A simple Angular app including examples for the following Medium article: https://medium.com/shippeo-tech-blog/angular-testing-mastery-the-best-practices-to-skyrocket-your-skills-examples-0a43220b949d
 
 ## Development server
 
